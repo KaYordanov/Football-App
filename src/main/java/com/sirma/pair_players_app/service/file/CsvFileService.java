@@ -12,19 +12,15 @@ import com.sirma.pair_players_app.repository.TeamRepository;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Service;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class CsvFileService {
@@ -67,7 +63,7 @@ public class CsvFileService {
         try(BufferedReader bf = new BufferedReader(new InputStreamReader(teams.getInputStream()))){
             String line;
 
-            bf.readLine(); // skipping the first line with column names
+            bf.readLine();
 
             while ((line = bf.readLine()) != null){
                 String[] data = line.split(",");
@@ -196,10 +192,4 @@ public class CsvFileService {
             throw new RuntimeException(e);
         }
     }
-
-
-    // първо пълня отобрите (teams)
-    // след това ми трябват отбор за да напълня играчите (playeres),
-    // след това ми трябват по два отбора за да напълня мачовете (matches),
-    // след това ми трябват мач и играч за да напълня записите (records)
 }

@@ -20,12 +20,13 @@ public class PlayerService {
 
     public List<Integer> pairPlayer(){
         List<Record> records = recordService.loadAllRecords();
-        Map<Long, List<Record>> matchRecordsList = records          // групирам записите по даден мач
+        Map<Long, List<Record>> matchRecordsList = records
+
                 .stream()
                 .collect(Collectors.groupingBy(r -> r.getMatch().getId()));
 
-        Map<String, Integer> pairMinutes = new HashMap<>();           // тук пазя двойката и обшото им врме за всички мачове
-        Map<String, List<Integer>> pairMatchesTime = new HashMap<>(); // String e двойката 1-3 и лист със обшото време на двамата за всеки мач
+        Map<String, Integer> pairMinutes = new HashMap<>();
+        Map<String, List<Integer>> pairMatchesTime = new HashMap<>();
 
         for (Map.Entry<Long, List<Record>> entry : matchRecordsList.entrySet()){
             List<Record> matchRecords = entry.getValue();
@@ -44,29 +45,17 @@ public class PlayerService {
                     Integer overlapEnd = Math.min(currentPlayerToMinutes, nextPlayerToMinutes);
                     Integer totalMinTogether = Math.max(0, overlapEnd - overlapStart);
 
-                    String key = generatePairKey(currentPlayerId, nextPlayerId);  // логика за създаване на ключа на всяка двойка
+                    String key = generatePairKey(currentPlayerId, nextPlayerId);
 
                     if(totalMinTogether > 0){
-                        pairMinutes.put(key, pairMinutes.getOrDefault(key, 0) + totalMinTogether); // подавам в Map-а двойка и общо време на терена през всичките мачове
+                        pairMinutes.put(key, pairMinutes.getOrDefault(key, 0) + totalMinTogether);
                         pairMatchesTime
                                 .computeIfAbsent(key, m -> new ArrayList<>())
-                                .add(totalMinTogether);  // добавям времето на двойката по време на следващия им открит мач
+                                .add(totalMinTogether);
                     }
                 }
             }
         }
-
-        // намирам от Map-а двойката с най-голямо value, като го сортирам по value и я слагам първа
-        Map<String, Integer> sortedDesc = pairMinutes.entrySet()
-                .stream()
-                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (e1, e2) -> e1,
-                        LinkedHashMap::new
-                ));
-
 
         Map.Entry<String, Integer> highestPair = pairMinutes
                 .entrySet()
